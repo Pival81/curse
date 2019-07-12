@@ -9,6 +9,7 @@ if __name__ == "__main__":
         if config["multimc_path"] == "":
             print("Your MultiMC path is not set, set it now:")
             config["multimc_path"] = input(">>")
+            config["releasetype"] = "release"
 
     with open("settings.json", "w") as f:
         json.dump(config, f, indent=4)
