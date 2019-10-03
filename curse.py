@@ -2,7 +2,6 @@ import requests
 import json as JSON
 from threading import Thread
 import operator
-import bs4
 from urllib import parse
 
 
@@ -41,6 +40,7 @@ class Mod():
 		del self.json
 
 	def getHTMLCorrected(self, url):
+		import bs4
 		html = requests.get(url, headers=self.headers)
 		soup_obj = bs4.BeautifulSoup(html.text, 'lxml')
 		links = soup_obj.find_all('a')
