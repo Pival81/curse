@@ -24,11 +24,12 @@ Total Downloads = 5 """
 class Mod():
 
 	def __init__(self, modlist_manager=None, id=None, json=None):
+		self.headers = {"User-Agent": "CurseClient/7.5 (Microsoft Windows NT 6.1.7600.0) CurseClient/7.5.7208.4378"}
 		self.mainUrl = "https://addons-ecs.forgesvc.net"
 		self.modlist_manager = modlist_manager
 		if id:
 			self.id = id
-			self.json = JSON.loads(requests.get(self.mainUrl + "/api/v2/addon/" + str(self.id)).text)
+			self.json = JSON.loads(requests.get(self.mainUrl + "/api/v2/addon/" + str(self.id), headers=self.headers).text)
 		else:
 			self.json = json
 			self.id = self.json["id"]
@@ -40,7 +41,7 @@ class Mod():
 		del self.json
 
 	def getHTMLCorrected(self, url):
-		html = requests.get(url)
+		html = requests.get(url, headers=self.headers)
 		soup_obj = bs4.BeautifulSoup(html.text, 'lxml')
 		links = soup_obj.find_all('a')
 		for link in links:
@@ -50,7 +51,7 @@ class Mod():
 		return str(soup_obj)
 
 	def getFiles(self):
-		filelist_json = requests.get(self.mainUrl + "/api/v2/addon/" + str(self.id) + "/files")
+		filelist_json = requests.get(self.mainUrl + "/api/v2/addon/" + str(self.id) + "/files", headers=self.headers)
 		self.filelist = JSON.loads(filelist_json.text)
 		self.filelist.sort(key=operator.itemgetter('fileDate'), reverse=True)
 
@@ -109,7 +110,7 @@ class Mod():
 	
 	def installFile(self, url, filename, fileid, path, dependencies=[]):
 		self.modlist_manager.removeMod(self.id, removeDependents=False)
-		file = requests.get(url)
+		file = requests.get(url, headers=self.headers)
 		with open(path + "/.minecraft/mods/" + filename, "wb") as f:
 			f.write(file.content)
 		self.modlist_manager.addMod(self.id, fileid, filename, dependencies)
@@ -168,9 +169,11 @@ class ModList():
 
 class Curse():
 
+
 	def __init__(self, path):
 		self.mainUrl = "https://addons-ecs.forgesvc.net"
 		self.modlist_manager = ModList(path)
+		self.headers={"User-Agent": "CurseClient/7.5 (Microsoft Windows NT 6.1.7600.0) CurseClient/7.5.7208.4378"}
 
 	""" def showDescription(url):
 		import sys
@@ -202,7 +205,7 @@ class Curse():
 			"&pageSize=" + itemPerPage +
 			"&searchFilter=" + parse.quote(arg) + 
 			"&sectionId=6&sort=" + sort
-			)
+			, headers=self.headers)
 			modlist = JSON.loads(modlist.text)
 			for i, x in enumerate(modlist):
 				modlist_final.append(Mod(modlist_manager=self.modlist_manager, json=x))
