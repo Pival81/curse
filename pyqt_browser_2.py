@@ -46,7 +46,8 @@ class RestrictedWebViewWidget(QtWidgets.QWidget):
         self.setMinimumSize(1200, 600)
 
     def getHTMLCorrected(self, url):
-        html = requests.get(url)
+        headers = {"User-Agent": "CurseClient/7.5 (Microsoft Windows NT 6.1.7600.0) CurseClient/7.5.7208.4378"}
+        html = requests.get(url, headers=headers)
         soup_obj = bs4.BeautifulSoup(html.text, 'lxml')
         links = soup_obj.find_all('a')
         for link in links:
@@ -57,7 +58,14 @@ class RestrictedWebViewWidget(QtWidgets.QWidget):
             html_file.write(str(soup_obj))
         return str(soup_obj)
 
-
+class Main():
+	
+	def __init__(self, id):
+		import sys
+		app = QtWidgets.QApplication(sys.argv)
+		web = RestrictedWebViewWidget(url="https://addons-ecs.forgesvc.net/api/v2/addon/" + str(id) + "/description")
+		web.show()
+		sys.exit(app.exec_())
 
 if __name__ == '__main__':
     import sys

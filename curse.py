@@ -3,6 +3,7 @@ import json as JSON
 from threading import Thread
 import operator
 from urllib import parse
+from pyqt_browser_2 import Main
 
 
 """ class CustomEncoder(JSON.JSONEncoder):
@@ -96,7 +97,7 @@ class Mod():
 		try:
 			fileSelected = int(input(">>")) - 1
 		except:
-			exit()
+			buh = Main(self.id)
 		for dependency in filelistVers[fileSelected]["dependencies"]:
 			if dependency["type"] == 3:
 				mod = Mod(modlist_manager=self.modlist_manager, id=dependency["addonId"])
