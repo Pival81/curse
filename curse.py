@@ -110,9 +110,9 @@ class Mod():
 			self.installFile(filelistVers[fileSelected]["downloadUrl"], filelistVers[fileSelected]["fileName"], filelistVers[fileSelected]["id"], path, [item["addonId"] for item in filelistVers[fileSelected]["dependencies"] if item["type"] == 3])
 	
 	def installFile(self, url, filename, fileid, path, dependencies=[]):
-		self.modlist_manager.removeMod(self.id, removeDependents=False)
+		bool = self.modlist_manager.removeMod(self.id, removeDependents=False)
 		file = requests.get(url, headers=self.headers)
-		with open(path + "/.minecraft/mods/" + filename, "wb") as f:
+		with open(path + "/.minecraft/mods/" + filename + ( ".disabled" if bool else "" ), "wb") as f:
 			f.write(file.content)
 		self.modlist_manager.addMod(self.id, fileid, filename, dependencies)
 		print("Installed", filename)
@@ -146,16 +146,22 @@ class ModList():
 		return True
 	
 	def removeMod(self, id, removeDependents=True):
+		bool = False
 		for item in self.modlist:
 			if item["id"] == id:
 				if removeDependents:
 					for i in [i["id"] for i in self.modlist if id in i["dependencies"]]:
 						self.removeMod(i)
 				import os
-				os.remove(self.path + "/.minecraft/mods/" + item["filename"])
+				try:
+					os.remove(self.path + "/.minecraft/mods/" + item["filename"])
+				except:
+					os.remove(self.path + "/.minecraft/mods/" + item["filename"] + ".disabled")
+					bool = True
 				print("Removed", item["filename"])
 				self.modlist.remove(item)
 		self.close()
+		return bool
 	
 	def open(self):
 		try:
