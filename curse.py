@@ -3,7 +3,7 @@ import json as JSON
 from threading import Thread
 import operator
 from urllib import parse
-from pyqt_browser_2 import Main
+#from pyqt_browser_2 import Main
 
 
 """ class CustomEncoder(JSON.JSONEncoder):
@@ -114,7 +114,7 @@ class Mod():
 		file = requests.get(url, headers=self.headers)
 		with open(path + "/.minecraft/mods/" + filename + ( ".disabled" if bool else "" ), "wb") as f:
 			f.write(file.content)
-		self.modlist_manager.addMod(self.id, fileid, filename, dependencies)
+		self.modlist_manager.addMod(self.id, self.name, fileid, filename, dependencies)
 		print("Installed", filename)
 
 class ModList():
@@ -123,9 +123,9 @@ class ModList():
 		self.path = path
 		self.open()
 
-	def addMod(self, id, fileid, filename, dependencies):
+	def addMod(self, id, name, fileid, filename, dependencies):
 		if self.checkFile(id, fileid):
-			self.modlist.append({"id": id, "fileid": fileid, "filename": filename, "dependencies": dependencies})
+			self.modlist.append({"id": id, "name": name, "fileid": fileid, "filename": filename, "dependencies": dependencies})
 		else:
 			print("File", filename, "is already installed")
 			exit()
